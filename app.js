@@ -52,7 +52,7 @@ app.post('/book', async (req, res) => {
                                     destination : destCityCode,
                                     departureDate : req.body.startDate
                                 })
-        const newData = flightOffers.data.filter(flight => {
+        flightOffers.data.filter(flight => {
             return flight.offerItems[0].price < req.body.flightBudget
         })
                         
@@ -64,7 +64,7 @@ app.post('/book', async (req, res) => {
             if(a.hotel.hotelDistance > b.hotel.hotelDistance) return 1; if (b.hotel.hotelDistance > a.hotel.hotelDistance) return -1; return 0;
         });
 
-        res.status(200).send({flights: newData, hotels: hotels.result.data})
+        res.status(200).send({flights: flightOffers.data, hotels: hotels.result.data})
     } catch(responseError) {
         console.log(responseError);
         res.status(400).send(responseError)
