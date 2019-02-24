@@ -28,6 +28,28 @@ app.post('/inspirationSearch', (req, res) => {
     });
 });
 
+app.post('/book', async (req, res) => {
+    try {
+        let airports = await amadeus.referenceData.locations.airports.get({
+            longitude : parseFloat(req.body.longitude),
+            latitude  : parseFloat(req.body.latitude)
+        })
+
+        let hotels = await amadeus.shopping.hotelOffers.get({
+            cityCode : 'CHI' //"req.originCityCode"
+        })
+        
+        hotels.result.data.filter(h => {return (h.hotel.rating > req.body.minStars) && (h.offers[0].price.total<req.body.budget)}).sort((a,b)=> {
+            if(a.hotel.hotelDistance > b.hotel.hotelDistance) return 1; if (b.hotel.hotelDistance > a.hotel.hotelDistance) return -1; return 0;
+        });
+
+        res.status(200).send(hotels.result.data)
+    } catch(responseError) {
+        console.log(responseError);
+        res.status(400).send(responseError)
+    }
+});
+
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`)
